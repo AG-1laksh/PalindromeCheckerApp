@@ -3,20 +3,21 @@ import java.util.Scanner;
 public class PalindromeCheckerApp {
     public static void main(String[] args) {
 
-        String word = "madam";
+        String original = "level";
 
-        // Reverse the string manually
+        // Variable to store reversed string
         String reversed = "";
 
-        for (int i = word.length() - 1; i >= 0; i--) {
-            reversed = reversed + word.charAt(i);
+        // Reverse using for loop
+        for (int i = original.length() - 1; i >= 0; i--) {
+            reversed = reversed + original.charAt(i);  // String Concatenation
         }
 
-        // Check palindrome using if-else
-        if (word.equals(reversed)) {
-            System.out.println("The word \"" + word + "\" is a Palindrome.");
+        // Compare original and reversed using equals()
+        if (original.equals(reversed)) {
+            System.out.println("The string \"" + original + "\" is a Palindrome.");
         } else {
-            System.out.println("The word \"" + word + "\" is NOT a Palindrome.");
+            System.out.println("The string \"" + original + "\" is NOT a Palindrome.");
         }
 
         System.out.println("Program executed successfully.");
