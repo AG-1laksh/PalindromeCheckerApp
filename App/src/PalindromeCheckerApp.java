@@ -1,4 +1,5 @@
 import java.util.Scanner;
+import java.util.Stack;
 
 public class PalindromeCheckerApp {
     public static boolean isPalindrome(String str) {
@@ -6,28 +7,27 @@ public class PalindromeCheckerApp {
             return false;
         }
 
-        // Clean the string (optional, but good practice): remove spaces and make lowercase
-        // str = str.replaceAll("\\s+", "").toLowerCase();
+        // Initialize the Stack
+        Stack<Character> stack = new Stack<>();
 
-        // 1. Convert string to char[]
-        char[] charArray = str.toCharArray();
-
-        // 2. Initialize the two pointers
-        int left = 0;                  // Starts at the beginning
-        int right = charArray.length - 1; // Starts at the end
-
-        // 3. Loop until the two pointers meet in the middle
-        while (left < right) {
-            // Compare start & end characters
-            if (charArray[left] != charArray[right]) {
-                return false; // If there's a mismatch, it's not a palindrome
-            }
-            // Move pointers towards the center
-            left++;
-            right--;
+        // 1. Push characters into stack
+        // Iterating through the string and pushing each character
+        for (int i = 0; i < str.length(); i++) {
+            stack.push(str.charAt(i));
         }
 
-        return true; // If the loop finishes without mismatches, it is a palindrome
+        // 2. Pop and compare
+        // The stack pops elements in reverse order (LIFO)
+        for (int i = 0; i < str.length(); i++) {
+            char poppedChar = stack.pop();
+
+            // Compare the original character with the popped (reversed) character
+            if (str.charAt(i) != poppedChar) {
+                return false; // If there's a mismatch, it's not a palindrome
+            }
+        }
+
+        return true; // If we finish the loop with no mismatches, it is a palindrome
     }
 
     public static void main(String[] args) {
@@ -36,13 +36,14 @@ public class PalindromeCheckerApp {
         System.out.print("Enter a string to check: ");
         String input = scanner.nextLine();
 
+        // 3. Print result
         if (isPalindrome(input)) {
             System.out.println("Result: '" + input + "' IS a palindrome.");
         } else {
             System.out.println("Result: '" + input + "' is NOT a palindrome.");
         }
 
-
+        scanner.close();
     }
 
 }
