@@ -4,40 +4,38 @@ import java.util.ArrayDeque;
 
 public class PalindromeCheckerApp {
 
-    // Method to check String Palindrome using a Deque
-    private static boolean checkPalindrome(String str, int start, int end) {
-        // Base Condition 1: If pointers cross or meet, all characters matched
-        if (start >= end) {
-            return true;
-        }
-
-        // Base Condition 2: Mismatch found, terminate early
-        if (str.charAt(start) != str.charAt(end)) {
+    public static boolean isPalindrome(String input) {
+        // Handle null input safely
+        if (input == null) {
             return false;
         }
 
-        // Recursive call: move start forward and end backward
-        return checkPalindrome(str, start + 1, end - 1);
-    }
+        // 1. String Preprocessing & Regular Expressions
+        // Replace everything that is NOT a letter or number with an empty string,
+        // then convert the entire result to lowercase.
+        String normalizedInput = input.replaceAll("[^a-zA-Z0-9]", "").toLowerCase();
 
-    // Wrapper method to clean the input and trigger the recursion
-    public static boolean isPalindrome(String input) {
-        // Clean the input string (remove spaces/punctuation and make lowercase)
-        String cleanInput = input.replaceAll("[^a-zA-Z0-9]", "").toLowerCase();
+        // 2. Apply Palindrome Logic (Using String/Array indexing)
+        int left = 0;
+        int right = normalizedInput.length() - 1;
 
-        // Handle edge case of an empty string
-        if (cleanInput.isEmpty()) {
-            return true;
+        // Compare characters from the outside in
+        while (left < right) {
+            if (normalizedInput.charAt(left) != normalizedInput.charAt(right)) {
+                return false; // Mismatch found
+            }
+            left++;
+            right--;
         }
 
-        // Initiate the recursion starting at the first and last indices
-        return checkPalindrome(cleanInput, 0, cleanInput.length() - 1);
+        // If the loop finishes without returning false, it's a palindrome
+        return true;
     }
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
 
-        System.out.print("Enter a string to check: ");
+        System.out.print("Enter a string to check (try adding spaces and mixed cases!): ");
         String userInput = scanner.nextLine();
 
         boolean result = isPalindrome(userInput);
