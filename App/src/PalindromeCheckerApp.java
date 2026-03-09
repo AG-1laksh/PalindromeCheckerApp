@@ -5,65 +5,33 @@ import java.util.ArrayDeque;
 public class PalindromeCheckerApp {
 
     // Method to check String Palindrome using a Deque
-    static class Node {
-        char data;
-        Node next;
-
-        Node(char data) {
-            this.data = data;
-            this.next = null;
-        }
-    }
-
-    public static boolean isPalindrome(String input) {
-        // Optional: Clean the input string
-        String cleanInput = input.replaceAll("[^a-zA-Z0-9]", "").toLowerCase();
-
-        // Edge case: Empty string or single character is a palindrome
-        if (cleanInput.length() <= 1) {
+    private static boolean checkPalindrome(String str, int start, int end) {
+        // Base Condition 1: If pointers cross or meet, all characters matched
+        if (start >= end) {
             return true;
         }
 
-        // 1. Convert string to linked list
-        Node head = new Node(cleanInput.charAt(0));
-        Node current = head;
-        for (int i = 1; i < cleanInput.length(); i++) {
-            current.next = new Node(cleanInput.charAt(i));
-            current = current.next;
+        // Base Condition 2: Mismatch found, terminate early
+        if (str.charAt(start) != str.charAt(end)) {
+            return false;
         }
 
-        // 2. Find the middle using the Fast and Slow Pointer Technique
-        Node slow = head;
-        Node fast = head;
-        while (fast != null && fast.next != null) {
-            slow = slow.next;        // Moves 1 step
-            fast = fast.next.next;   // Moves 2 steps
-        }
-        // When 'fast' reaches the end, 'slow' is at the middle.
+        // Recursive call: move start forward and end backward
+        return checkPalindrome(str, start + 1, end - 1);
+    }
 
-        // 3. In-Place Reversal of the second half
-        Node prev = null;
-        Node curr = slow;
-        while (curr != null) {
-            Node nextTemp = curr.next;
-            curr.next = prev;
-            prev = curr;
-            curr = nextTemp;
-        }
-        // 'prev' is now the head of the reversed second half
-        Node secondHalfHead = prev;
+    // Wrapper method to clean the input and trigger the recursion
+    public static boolean isPalindrome(String input) {
+        // Clean the input string (remove spaces/punctuation and make lowercase)
+        String cleanInput = input.replaceAll("[^a-zA-Z0-9]", "").toLowerCase();
 
-        // 4. Compare halves
-        Node firstHalfHead = head;
-        while (secondHalfHead != null) {
-            if (firstHalfHead.data != secondHalfHead.data) {
-                return false; // Mismatch found
-            }
-            firstHalfHead = firstHalfHead.next;
-            secondHalfHead = secondHalfHead.next;
+        // Handle edge case of an empty string
+        if (cleanInput.isEmpty()) {
+            return true;
         }
 
-        return true;
+        // Initiate the recursion starting at the first and last indices
+        return checkPalindrome(cleanInput, 0, cleanInput.length() - 1);
     }
 
     public static void main(String[] args) {
