@@ -1,97 +1,83 @@
-import java.util.Scanner;
 import java.util.Stack;
-import java.util.Deque;
-import java.util.ArrayDeque;
 
-// 1. Define PalindromeStrategy interface
-// This acts as a contract. Any class implementing this MUST have a check() method.
-interface PalindromeStrategy {
-    boolean check(String input);
-}
-
-// 2a. Implement StackStrategy
-class StackStrategy implements PalindromeStrategy {
-    @Override
-    public boolean check(String input) {
-        if (input == null) return false;
-        String cleanInput = input.replaceAll("[^a-zA-Z0-9]", "").toLowerCase();
-
-        Stack<Character> stack = new Stack<>();
-        for (char c : cleanInput.toCharArray()) {
-            stack.push(c);
-        }
-        for (char c : cleanInput.toCharArray()) {
-            if (stack.pop() != c) {
-                return false;
-            }
-        }
-        return true;
-    }
-}
-
-// 2b. Implement DequeStrategy
-class DequeStrategy implements PalindromeStrategy {
-    @Override
-    public boolean check(String input) {
-        if (input == null) return false;
-        String cleanInput = input.replaceAll("[^a-zA-Z0-9]", "").toLowerCase();
-
-        Deque<Character> deque = new ArrayDeque<>();
-        for (char c : cleanInput.toCharArray()) {
-            deque.addLast(c);
-        }
-        while (deque.size() > 1) {
-            if (deque.removeFirst() != deque.removeLast()) {
-                return false;
-            }
-        }
-        return true;
-    }
-}
-
-// Main Application Class
 public class PalindromeCheckerApp {
 
-    // 3. Inject strategy at runtime
-    // This method takes ANY valid strategy via Polymorphism
-    public static boolean executeStrategy(String input, PalindromeStrategy strategy) {
-        return strategy.check(input);
+    // Algorithm 1: Two-Pointer (Highly optimized, O(1) space)
+    public static boolean checkTwoPointer(String str) {
+        int left = 0;
+        int right = str.length() - 1;
+        while (left < right) {
+            if (str.charAt(left) != str.charAt(right)) {
+                return false;
+            }
+            left++;
+            right--;
+        }
+        return true;
+    }
+
+    // Algorithm 2: Built-in StringBuilder (Convenient, but O(N) space)
+    public static boolean checkStringBuilder(String str) {
+        return new StringBuilder(str).reverse().toString().equals(str);
+    }
+
+    // Algorithm 3: Stack-based (Slower due to object creation overhead)
+    public static boolean checkStack(String str) {
+        Stack<Character> stack = new Stack<>();
+        for (int i = 0; i < str.length(); i++) {
+            stack.push(str.charAt(i)); // Autoboxing char to Character adds overhead
+        }
+        for (int i = 0; i < str.length(); i++) {
+            if (stack.pop() != str.charAt(i)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
-
-        System.out.print("Enter a string to check: ");
-        String userInput = scanner.nextLine();
-
-        System.out.println("\nChoose a validation algorithm:");
-        System.out.println("1. Stack-based (LIFO matching)");
-        System.out.println("2. Deque-based (Front & Rear matching)");
-        System.out.print("Enter choice (1 or 2): ");
-        int choice = scanner.nextInt();
-
-        // Declare the interface type, not the concrete class
-        PalindromeStrategy selectedStrategy;
-
-        // Dynamically assign the strategy based on user input
-        if (choice == 1) {
-            selectedStrategy = new StackStrategy();
-            System.out.println("--> Executing Stack Strategy...");
-        } else {
-            selectedStrategy = new DequeStrategy();
-            System.out.println("--> Executing Deque Strategy...");
+        // 1. Generate a massive palindrome for noticeable performance differences
+        int size = 100000;
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < size; i++) {
+            sb.append('a');
         }
+        String testString = sb.toString();
 
-        // Pass the chosen strategy into our execution context
-        boolean result = executeStrategy(userInput, selectedStrategy);
+        System.out.println("Starting Performance Comparison (String length: " + size + ")...\n");
 
-        System.out.println("\n--- Output ---");
-        if (result) {
-            System.out.println("Result: '" + userInput + "' IS a palindrome.");
-        } else {
-            System.out.println("Result: '" + userInput + "' is NOT a palindrome.");
-        }
+        // Warm-up the JVM: Running them once before measuring ensures the
+        // Java Just-In-Time (JIT) compiler optimizes the code fairly.
+        checkTwoPointer(testString);
+        checkStringBuilder(testString);
+        checkStack(testString);
 
-        scanner.close();
+        // 2. Run Multiple Algorithms & Capture Execution Time
+
+        // Test 1: Two-Pointer
+        long start1 = System.nanoTime();
+        checkTwoPointer(testString);
+        long end1 = System.nanoTime();
+        long time1 = end1 - start1;
+
+        // Test 2: StringBuilder
+        long start2 = System.nanoTime();
+        checkStringBuilder(testString);
+        long end2 = System.nanoTime();
+        long time2 = end2 - start2;
+
+        // Test 3: Stack
+        long start3 = System.nanoTime();
+        checkStack(testString);
+        long end3 = System.nanoTime();
+        long time3 = end3 - start3;
+
+        // 3. Display Results
+        System.out.println("--- Execution Times (in nanoseconds) ---");
+        System.out.println("1. Two-Pointer Approach   : " + time1 + " ns");
+        System.out.println("2. StringBuilder Approach : " + time2 + " ns");
+        System.out.println("3. Stack Approach         : " + time3 + " ns");
+
+        System.out.println("\n(Note: Lower time is better. 1 millisecond = 1,000,000 nanoseconds)");
     }
 }
