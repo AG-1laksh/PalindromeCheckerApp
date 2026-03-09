@@ -1,44 +1,51 @@
 import java.util.Scanner;
-import java.util.Deque;      // ADDED: This import is required to use the Deque interface
-import java.util.ArrayDeque;
+import java.util.Stack;
 
-public class PalindromeCheckerApp {
+// 1. PalindromeChecker Class (Removed 'public' so it can sit in this file)
+class PalindromeChecker {
 
-    public static boolean isPalindrome(String input) {
-        // Handle null input safely
+    public boolean checkPalindrome(String input) {
         if (input == null) {
             return false;
         }
 
-        // 1. String Preprocessing & Regular Expressions
-        // Replace everything that is NOT a letter or number with an empty string,
-        // then convert the entire result to lowercase.
-        String normalizedInput = input.replaceAll("[^a-zA-Z0-9]", "").toLowerCase();
+        // Normalize string (ignore case and non-alphanumeric characters)
+        String cleanInput = input.replaceAll("[^a-zA-Z0-9]", "").toLowerCase();
 
-        // 2. Apply Palindrome Logic (Using String/Array indexing)
-        int left = 0;
-        int right = normalizedInput.length() - 1;
+        // Internal Data Structure: Stack
+        Stack<Character> stack = new Stack<>();
 
-        // Compare characters from the outside in
-        while (left < right) {
-            if (normalizedInput.charAt(left) != normalizedInput.charAt(right)) {
-                return false; // Mismatch found
-            }
-            left++;
-            right--;
+        // Push all characters onto the stack
+        for (char c : cleanInput.toCharArray()) {
+            stack.push(c);
         }
 
-        // If the loop finishes without returning false, it's a palindrome
+        // Pop characters off the stack and compare.
+        // Because a Stack is Last-In-First-Out (LIFO), popping gives us the reversed string.
+        for (char c : cleanInput.toCharArray()) {
+            if (stack.pop() != c) {
+                return false; // Mismatch found
+            }
+        }
+
         return true;
     }
+}
+
+// 2. Main Application Class (Must be public and match the filename)
+public class PalindromeCheckerApp {
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
 
-        System.out.print("Enter a string to check (try adding spaces and mixed cases!): ");
+        // Instantiate our dedicated service object
+        PalindromeChecker checker = new PalindromeChecker();
+
+        System.out.print("Enter a string to check: ");
         String userInput = scanner.nextLine();
 
-        boolean result = isPalindrome(userInput);
+        // Delegate the actual checking to the service
+        boolean result = checker.checkPalindrome(userInput);
 
         if (result) {
             System.out.println("Result: '" + userInput + "' IS a palindrome.");
